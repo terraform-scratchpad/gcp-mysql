@@ -1,6 +1,7 @@
 provider "google" {
   region = "${var.region}"
   version = "1.15.0"
+  credentials = "${file("../account.json")}"
 }
 
 provider "random" {}
@@ -23,24 +24,26 @@ resource "random_string" "mysql-admin-password" {
 }
 
 resource "google_sql_database_instance" "mysql-instance" {
-
   name = "mysql-master-instance"
   database_version = "MYSQL_5_7"
   region = "${var.region}"
   "settings" {
     tier = "db-f1-micro"
   }
+  project = "octopuce-72875"
 }
 
 resource "google_sql_database" "mysql-db" {
-  instance = "${google_sql_database_instance.mysql-instance.id}"
-  name = "${random_string.mysql-db-name.id}"
+  instance = "${google_sql_database_instance.mysql-instance.name}"
+  name = "${random_string.mysql-db-name.result}"
+  project = "octopuce-72875"
 }
 
 resource "google_sql_user" "mysql-user" {
-  instance = "${random_string.mysql-admin-username.id}"
-  name = "worldcup"
-  password = "${random_string.mysql-admin-password.id}"
+  instance = "${google_sql_database_instance.mysql-instance.name}"
+  name = "${random_string.mysql-admin-username.result}"
+  password = "${random_string.mysql-admin-password.result}"
+  project = "octopuce-72875"
 }
 
 output "db-instance-ip" {
@@ -56,5 +59,6 @@ output "db-user" {
 }
 
 output "db-password" {
+  sensitive = true
   value = "${google_sql_user.mysql-user.password}"
 }
