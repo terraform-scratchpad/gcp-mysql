@@ -24,7 +24,7 @@ resource "random_string" "mysql-admin-password" {
 }
 
 resource "google_sql_database_instance" "mysql-instance" {
-  name = "mysql-master-instance"
+  name = "workdcup-mysql-${random_string.mysql-db-name}-${count.index}"
   database_version = "MYSQL_5_7"
   region = "${var.region}"
   "settings" {
