@@ -1,7 +1,5 @@
 provider "google" {
-  region = "${var.region}"
   version = "1.15.0"
-  credentials = "${file("../account.json")}"
 }
 
 provider "random" {}
